@@ -1,0 +1,94 @@
+# Install zabbix-agent zabbix-sender
+
+/usr/bin/yum -y install expect --disablerepo=* --enablerepo=core-0,Zabbix-for-RHEL6-x86-64,EPEL6-x86_64,CentOS66x86_64mirror,CentOS66x86_64
+
+/usr/bin/yum -y install OpenIPMI OpenIPMI-tools postgresql-server zabbix-server zabbix-get zabbix-server-pgsql --disablerepo=* --enablerepo=core-0,Zabbix-for-RHEL6-x86-64,EPEL6-x86_64,CentOS66x86_64mirror,CentOS66-x86_64
+/usr/bin/yum -y install php php-bcmath php-mbstring dejavu-sans-fonts httpd php-xml php-gd php-pgsql zabbix-web-pgsql zabbix-web-japanese --disablerepo=* --enablerepo=core-0,Zabbix-for-RHEL6-x86-64,CentOS66-x86_64
+
+# Checkconfig setup
+/sbin/chkconfig zabbix-server on
+/sbin/chkconfig postgresql on
+/sbin/chkconfig httpd on
+
+# PostgreSQL setup
+/etc/init.d/postgresql initdb
+/etc/init.d/postgresql start
+
+/bin/cp -rp /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.org
+/bin/sed -s "s/ident$/trust/g" /var/lib/pgsql/data/pg_hba.conf.org > /var/lib/pgsql/data/pg_hba.conf
+/etc/init.d/postgresql restart
+
+
+ZABBIX_USER="zabbix"
+ZABBIX_PASSWORD="zabbix"
+ZABBIX_DB="zabbix"
+
+
+# PostgreSQL Setup
+/bin/cat << EOF > /var/lib/pgsql/zabbix-create.dat
+create user $ZABBIX_USER NOCREATEDB NOCREATEROLE NOCREATEUSER;
+alter user $ZABBIX_USER with PASSWORD '$ZABBIX_PASSWORD';
+create database $ZABBIX_DB owner $ZABBIX_USER;
+
+# SHARED_BUFFERS=echo `cat /proc/meminfo | grep ^MemTotal | cut -f2 -d ":" | sed -e "s/kB//g" -e "s/ //g"` / 1173 | bc
+# /bin/su - postgres
+# DBUSRPASSWD=`/usr/bin/mkpasswd -s 0 -l 32`
+# /bin/echo $DBUSRPASSWD > /var/lib/pgsql/.zabbix_dbpasswd
+# /bin/chmod 400 /var/lib/pgsql/.zabbix_dbpasswd
+
+/bin/cat << EOF > /var/lib/pgsql/zabbix-create.dat
+create user $ZABBIX_USER NOCREATEDB NOCREATEROLE NOCREATEUSER;
+alter user $ZABBIX_USER with PASSWORD '$ZABBIX_PASSWORD';
+create database $ZABBIX_DB owner $ZABBIX_USER;
+EOF
+/bin/cat << EOF > /var/lib/pgsql/zabbix-create.sh
+/usr/bin/psql -f /var/lib/pgsql/zabbix-create.dat
+EOF
+/bin/chown postgres. /var/lib/pgsql/zabbix-create.dat
+/bin/chown postgres. /var/lib/pgsql/zabbix-create.sh
+/bin/su -c "/bin/bash /var/lib/pgsql/zabbix-create.sh" postgres
+#/bin/su -c "/usr/bin/createdb -O zabbix zabbix" postgres
+/bin/su -c "/bin/echo 'zabbix' > ~/.pgpass" postgres
+/bin/su -c "/bin/chmod 600 ~/.pgpass" postgres
+/bin/su -c "/usr/bin/psql -w $ZABBIX_USER -d $ZABBIX_DB -f /usr/share/doc/zabbix-server-pgsql*/create/schema.sql zabbix" postgres
+/bin/su -c "/usr/bin/psql -w $ZABBIX_USER -d $ZABBIX_DB -f /usr/share/doc/zabbix-server-pgsql*/create/images.sql zabbix" postgres
+/bin/su -c "/usr/bin/psql -w $ZABBIX_USER -d $ZABBIX_DB -f /usr/share/doc/zabbix-server-pgsql*/create/data.sql zabbix" postgres
+
+# Apache / PHP Setup
+/bin/echo 'date.timezone = "Asia/Tokyo"' >> /etc/php.ini
+/etc/init.d/httpd restart
+
+/bin/cat << EOF > /etc/zabbix/web/zabbix.conf.php
+<?php
+// Zabbix GUI configuration file
+global \\$DB;
+
+\\$DB['TYPE']     = 'POSTGRESQL';
+\\$DB['SERVER']   = 'localhost';
+\\$DB['PORT']     = '0';
+\\$DB['DATABASE'] = 'zabbix';
+\\$DB['USER']     = 'zabbix';
+\\$DB['PASSWORD'] = 'zabbix';
+
+// SCHEMA is relevant only for IBM_DB2 database
+\\$DB['SCHEMA'] = '';
+
+\\$ZBX_SERVER      = 'localhost';
+\\$ZBX_SERVER_PORT = '10051';
+\\$ZBX_SERVER_NAME = '';
+
+\\$IMAGE_FORMAT_DEFAULT = IMAGE_FORMAT_PNG;
+?>
+EOF
+/bin/chown apache. /etc/zabbix/web/zabbix.conf.php
+
+# ZabbixServer OCP Custom
+/usr/bin/wget "http://$server:$http_port/cobbler/repo_mirror/Zabbix-OCP/set_ssh_agent.sh" -P /usr/lib/zabbix/
+/usr/bin/wget "http://$server:$http_port/cobbler/repo_mirror/Zabbix-OCP/update_agent_interfaces.sh" -P /usr/lib/zabbix/
+/usr/bin/wget "http://$server:$http_port/cobbler/repo_mirror/Zabbix-OCP/update_ipmi_interfaces.sh" -P /usr/lib/zabbix/
+
+/bin/chmod +x /usr/lib/zabbix/*.sh
+
+echo "StartIPMIPollers=2" >> /etc/zabbix/zabbix_proxy.conf
+
+/etc/init.d/zabbix-server start

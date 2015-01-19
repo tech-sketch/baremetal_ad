@@ -1,0 +1,50 @@
+# Install zabbix-proxy
+
+/usr/bin/yum -y install expect --disablerepo=* --enablerepo=core-0,Zabbix-for-RHEL6-x86-64,EPEL6-x86_64,CentOS66x86_64mirror,CentOS66x86_64
+
+/usr/bin/yum -y install OpenIPMI OpenIPMI-tools postgresql-server zabbix-proxy zabbix-get zabbix-sender ipmitool zabbix-proxy-pgsql --disablerepo=* --enablerepo=core-0,Zabbix-for-RHEL6-x86-64,EPEL6-x86_64,CentOS66x86_64mirror,CentOS66-x86_64
+
+# Checkconfig setup
+/sbin/chkconfig zabbix-proxy on
+/sbin/chkconfig postgresql on
+
+# PostgreSQL setup
+/sbin/service postgresql initdb
+/sbin/service postgresql start
+
+/bin/cp -rp /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.org
+/bin/sed -s "s/ident$/trust/g" /var/lib/pgsql/data/pg_hba.conf.org > /var/lib/pgsql/data/pg_hba.conf
+/sbin/service postgresql restart
+
+ZABBIX_USER="zabbix"
+ZABBIX_PASSWORD="zabbix"
+ZABBIX_DB="zabbix_proxy"
+
+# PostgreSQL Setup
+/bin/cat << EOF > /var/lib/pgsql/zabbix-create.dat
+create user $ZABBIX_USER NOCREATEDB NOCREATEROLE NOCREATEUSER;
+alter user $ZABBIX_USER with PASSWORD '$ZABBIX_PASSWORD';
+create database $ZABBIX_DB owner $ZABBIX_USER;
+EOF
+/bin/cat << EOF > /var/lib/pgsql/zabbix-create.sh
+/usr/bin/psql -f /var/lib/pgsql/zabbix-create.dat
+EOF
+/bin/chown postgres. /var/lib/pgsql/zabbix-create.dat
+/bin/chown postgres. /var/lib/pgsql/zabbix-create.sh
+/bin/su -c "/bin/bash /var/lib/pgsql/zabbix-create.sh" postgres
+/bin/su -c "/bin/echo 'zabbix' > ~/.pgpass" postgres
+/bin/su -c "/bin/chmod 600 ~/.pgpass" postgres
+/bin/su -c "/usr/bin/psql -w $ZABBIX_USER -d $ZABBIX_DB -f /usr/share/doc/zabbix-proxy-pgsql-*/create/schema.sql zabbix" postgres
+
+# ZabbixProxy OCP Custom
+/bin/cp -rp /etc/zabbix/zabbix_proxy.conf /etc/zabbix/zabbix_proxy.conf.org
+/bin/sed -i -e "s/^DBName=.*/DBName=$ZABBIX_DB/g" \
+       -e "s/^DBUser=.*/DBUser=/$ZABBIX_USER/g" \
+       -e "s/^DBPassword=.*/DBPassword=$ZABBIX_PASSWORD/g" \
+       -e "s/^Server=.*/Server=$ZABBIX_SERVER/g" \
+       -e "s/# StartIPMIPollers=*/StartIPMIPollers=2/g" \
+       -e "s/Hostname=/# Hostname=/g" \
+       -e "s/# HostnameItem=/HostnameItem=/g" \
+       /etc/zabbix/zabbix_proxy.conf
+
+/sbin/service zabbix-proxy start

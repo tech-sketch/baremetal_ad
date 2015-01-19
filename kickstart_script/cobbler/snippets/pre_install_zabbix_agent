@@ -1,0 +1,25 @@
+# Install zabbix-agent zabbix-sender
+
+/usr/bin/yum -y install zabbix-agent zabbix-sender --disablerepo=* --enablerepo=core-0,Zabbix-for-RHEL6-x86-64,EPEL6-x86_64,CentOS66x86_64mirror,CentOS66x86_64
+
+# Checkconfig setup
+/sbin/chkconfig zabbix-agent on
+
+# Environment variable
+# Kickstart Metadata get
+#set $zabbix_server_ip = $getVar('zabbix_server_ip', 'zabbix-server')
+
+# Zabbix-agent modify
+/bin/sed -i -e "s/^# EnableRemoteCommands.*/EnableRemoteCommands=1/g" \
+       -e "s/^Server=.*/Server=$zabbix_server_ip/g" \
+       -e "s/^ServerActive=.*/ServerActive=$zabbix_server_ip/g" \
+       -e "s/^Hostname=/#Hostname=/g" \
+       -e "s/# HostnameItem/HostnameItem/g" \
+       -e "s/# HostMetadata=/HostMetadata=OCP ACTIVATE/g" \
+       -e "s/# AllowRoot=0/AllowRoot=1/g" \
+       /etc/zabbix/zabbix_agentd.conf
+
+/usr/bin/wget "http://$server:$http_port/cobbler/repo_mirror/Zabbix-OCP/zbx_sender_hostmod.sh" -P /usr/lib/zabbix/
+/bin/sh /usr/lib/zabbix/zbx_sender_hostmod.sh eth0
+
+/etc/init.d/zabbix-agent start
