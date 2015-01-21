@@ -9,7 +9,7 @@ class ZabbixServerStartUp(object):
         self.api_url = api_url
         self.username = username
         self.password = password
-        self.path = "/usr/lib/zabbix/scheduler/server_startup"
+        self.path = "/usr/lib/zabbix/scheduler"
 
     def GetServerHost(self):
         api = ZabbixApi(self.api_url, self.username, self.password)
