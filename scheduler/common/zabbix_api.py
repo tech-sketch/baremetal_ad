@@ -171,6 +171,13 @@ class ZabbixApi(object):
         contents = urllib2.urlopen(request)
         return True
 
+    def host_status_change(self, host_name, status):
+        host_id = self._get_id('host', host_name)
+        post = json.dumps({'jsonrpc':'2.0', 'method':'host.update', 'params':{'hostid': host_id, 'status': status}, 'auth': self.auth_token, 'id':1})
+        request = urllib2.Request(self.api_url, post, {"Content-Type":"application/json-rpc"})
+        contents = urllib2.urlopen(request)
+        return True
+
     def _get_id(self, name, host):
         method = name + '.get'
         id = name + 'id'
