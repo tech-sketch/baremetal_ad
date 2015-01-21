@@ -20,7 +20,7 @@ class ZabbixServerStartUp(object):
     def HostStatusChange(self):
         api = ZabbixApi(self.api_url, self.username, self.password)
         api.user_login()
-        api.host_status_change(self.host_name, 1)
+        api.host_status_change(self.host_name, 0)
 
     def CreateTemplates(self):
         api = ZabbixApi(self.api_url, self.username, self.password)
