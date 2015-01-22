@@ -1,4 +1,12 @@
 #!/bin/env python
+
+# Run when to run the ZabbixAction
+#
+# Usages:
+#
+#   caller_action <action name> <hostname>
+#
+
 import sys
 
 from action.zabbix_action import ZabbixAction

@@ -1,5 +1,12 @@
 #!/bin/env python
 
+# Run when the Proxy schedule
+#
+# Usages:
+#
+#   caller_schedule <hostname>
+#
+
 from schedule.rule.rule import Rule
 
 class Schedule(object):
