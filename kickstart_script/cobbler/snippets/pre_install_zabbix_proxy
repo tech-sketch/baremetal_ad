@@ -39,7 +39,7 @@ EOF
 # ZabbixProxy OCP Custom
 /bin/cp -rp /etc/zabbix/zabbix_proxy.conf /etc/zabbix/zabbix_proxy.conf.org
 /bin/sed -i -e "s/^DBName=.*/DBName=$ZABBIX_DB/g" \
-       -e "s/^DBUser=.*/DBUser=/$ZABBIX_USER/g" \
+       -e "s/^DBUser=.*/DBUser=$ZABBIX_USER/g" \
        -e "s/^DBPassword=.*/DBPassword=$ZABBIX_PASSWORD/g" \
        -e "s/^Server=.*/Server=$ZABBIX_SERVER/g" \
        -e "s/# StartIPMIPollers=*/StartIPMIPollers=2/g" \

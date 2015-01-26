@@ -161,10 +161,13 @@ d-i finish-install/reboot_in_progress note
 # directly, or use the apt-install and in-target commands to easily install
 # packages and run commands in the target system.
 # d-i preseed/late_command string [command]
+
+#set $zabbix_server_ip = $getVar('zabbix_server_ip','zabbix-server')
+
 #d-i preseed/late_command string wget -O- \
 d-i preseed/late_command string \
    wget -O- http://$http_server/cblr/links/$distro_name/pool/extras/wget.sh | /bin/sh -s $http_server $distro_name; \
    in-target chmod +x /root/pkg/custom_install.sh; \
-   in-target /bin/bash /root/pkg/custom_install.sh;
+   in-target /bin/bash /root/pkg/custom_install.sh $zabbix_server_ip;
 # deb install
 #d-i     preseed/late_command string in-target /bin/bash /media/cdrom/pool/extras/custom_install.sh

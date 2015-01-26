@@ -6,8 +6,11 @@
 /sbin/chkconfig zabbix-agent on
 
 # Environment variable
-# Kickstart Metadata get
 #set $zabbix_server_ip = $getVar('zabbix_server_ip', 'zabbix-server')
+#set $zabbix_server_flg = $getVar('zabbix_server_flg', '0')
+#set $zabbix_user = $getVar('zabbix_user', 'Admin')
+#set $zabbix_password = $getVar('zabbix_password', 'zabbix')
+#set $zabbix_agent_interface = $getVar('zabbix_agent_interface', 'eth0')
 
 # Zabbix-agent modify
 /bin/sed -i -e "s/^# EnableRemoteCommands.*/EnableRemoteCommands=1/g" \
@@ -15,11 +18,25 @@
        -e "s/^ServerActive=.*/ServerActive=$zabbix_server_ip/g" \
        -e "s/^Hostname=/#Hostname=/g" \
        -e "s/# HostnameItem/HostnameItem/g" \
-       -e "s/# HostMetadata=/HostMetadata=OCP ACTIVATE/g" \
        -e "s/# AllowRoot=0/AllowRoot=1/g" \
        /etc/zabbix/zabbix_agentd.conf
 
-/usr/bin/wget "http://$server:$http_port/cobbler/repo_mirror/Zabbix-OCP/zbx_sender_hostmod.sh" -P /usr/lib/zabbix/
-/bin/sh /usr/lib/zabbix/zbx_sender_hostmod.sh eth0
+#if $zabbix_server_flg == "0"
+       /bin/sed -i -e "s/# HostMetadata=/HostMetadata=OCP ACTIVATE/g" \
+       /etc/zabbix/zabbix_agentd.conf
+       /bin/mkdir -p /usr/lib/zabbix
+       /usr/bin/wget "http://$server:$http_port/cobbler/repo_mirror/Zabbix-OCP/baremetal_ad/scheduler/client_startup/zabbix_client_startup.py" -P /usr/lib/zabbix/
+       /bin/chmod 744 /usr/lib/zabbix/zabbix_client_startup.py
+
+/bin/cat << EOF > /usr/lib/zabbix/get_hostinfo.sh
+#! /bin/bash
+
+/usr/bin/python /usr/lib/zabbix/zabbix_client_startup.py "$zabbix_server_ip" "$zabbix_user" "$zabbix_password" "`/bin/hostname`" "`/sbin/ip -f inet -o addr show $zabbix_agent_interface | cut -d\  -f 7 | cut -d/  -f 1`"
+
+EOF
+
+       /bin/bash /usr/lib/zabbix/get_hostinfo.sh
+
+#end if
 
 /etc/init.d/zabbix-agent start

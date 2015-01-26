@@ -83,12 +83,10 @@ EOF
 /bin/chown apache. /etc/zabbix/web/zabbix.conf.php
 
 # ZabbixServer OCP Custom
-/usr/bin/wget "http://$server:$http_port/cobbler/repo_mirror/Zabbix-OCP/set_ssh_agent.sh" -P /usr/lib/zabbix/
-/usr/bin/wget "http://$server:$http_port/cobbler/repo_mirror/Zabbix-OCP/update_agent_interfaces.sh" -P /usr/lib/zabbix/
-/usr/bin/wget "http://$server:$http_port/cobbler/repo_mirror/Zabbix-OCP/update_ipmi_interfaces.sh" -P /usr/lib/zabbix/
+/usr/bin/wget -r -np -nH --cut-dirs=4 -R "index.html?*" "http://$server:$http_port/cobbler/repo_mirror/Zabbix-OCP/baremetal_ad" -P /usr/lib/zabbix/
 
-/bin/chmod +x /usr/lib/zabbix/*.sh
+/usr/bin/python /usr/lib/zabbix/scheduler/caller_server.py
 
-echo "StartIPMIPollers=2" >> /etc/zabbix/zabbix_proxy.conf
+/bin/sed -i -e "s/^# StartIPMIPoolers=.*/StartIPMIPoolers=2/g" /etc/zabbix/zabbix_server.conf
 
 /etc/init.d/zabbix-server start

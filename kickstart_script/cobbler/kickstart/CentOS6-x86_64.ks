@@ -56,7 +56,10 @@ wget "http://$server:$http_port/cblr/svc/op/yum/profile/CentOS6-x86_64" -O /dev/
 %post --log=/root/ks-post.log
 
 wget "http://$server:$http_port/cblr/svc/op/yum/profile/CentOS6-x86_64" --output-document=/etc/yum.repos.d/cobbler-config.repo
+
 # ZabbixServer ZabbixAgent Install
+# Kickstart Metadata get
+
 $SNIPPET('pre_install_zabbix_agent')
 
 # Start koan environment setup

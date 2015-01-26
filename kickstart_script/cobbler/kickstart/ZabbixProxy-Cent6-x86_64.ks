@@ -53,16 +53,19 @@ $SNIPPET('log_ks_pre')
 
 wget "http://$server:$http_port/cblr/svc/op/yum/profile/ZabbixProxyForCentOS66-x86_64" -O /dev/null
 
+
 %post --log=/root/ks-post.log
 
 wget "http://$server:$http_port/cblr/svc/op/yum/profile/ZabbixProxyForCentOS66-x86_64" --output-document=/etc/yum.repos.d/cobbler-config.repo
 
 # ZabbixProxy ZabbixAgent Install
+set $zabbix_agent_host = `hostname`
+set $zabbix_agent_ip = `ip -f inet -o addr show $zabbix_agent_interface | cut -d\  -f 7 | cut -d/  -f 1`
+
 $SNIPPET('pre_install_zabbix_proxy')
 $SNIPPET('pre_install_zabbix_agent')
-# $SNIPPET('pre_send_zabbix_proxy_trapper')
 
-# start koan environment setup
+# Start koan environment setup
 $SNIPPET('koan_environment')
 
 %end

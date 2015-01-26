@@ -59,6 +59,7 @@ wget "http://$server:$http_port/cblr/svc/op/yum/profile/ZabbixServerForCentOS66-
 wget "http://$server:$http_port/cblr/svc/op/yum/profile/ZabbixServerForCentOS66-x86_64" --output-document=/etc/yum.repos.d/cobbler-config.repo
 
 # ZabbixServer ZabbixAgent Install
+# Kickstart Metadata get
 $SNIPPET('pre_install_zabbix_server')
 $SNIPPET('pre_install_zabbix_agent')
 
