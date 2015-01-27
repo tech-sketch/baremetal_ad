@@ -67,6 +67,6 @@ $SNIPPET('pre_install_zabbix_agent')
 $SNIPPET('koan_environment')
 
 # Zabbix Tune wait
-/bin/sleep 300
+/bin/sleep 120
 
 %end
