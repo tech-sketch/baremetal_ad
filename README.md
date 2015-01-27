@@ -84,7 +84,7 @@ The following requirements exist for running this product:
 
 ### profile setting
 Enter the IP address of the zabbix server [[@@ZabbixServerIP@@]]</b>
- 
+
     # cobbler profile edit --name="CentOS66-x86_64" --repos="zabbix-for-RHEL6-x86-64 Zabbix-OCP EPEL6-x86_64 CentOS66x86_64mirror CentOS66x86_64" --kickstart="/var/lib/cobbler/kickstart/CentOS6-x86_64.ks" --ksmeta="zabbix_server_ip=[[@@ZabbixServerIP@@]]" --kopts="console=ttyS1,115200"
 
     # cobbler profile edit --name="OCP-MiniOS" --kickstart="/var/lib/cobbler/kickstart/ubuntu-tis-ocp.seed" --ksmeta="zabbix_server_ip=[[@@ZabbixServerIP@@]]" --kopts="console=ttyS0 console=S4,115200"
@@ -105,6 +105,7 @@ Enter the IP address of the zabbix server [[@@ZabbixServerIP@@]]</b>
 #### Next step, choice to [OCP-MiniOS] from PXE boot menu to other server.
 ##### KickstartMetadata chenged "zabbix_server_ip"<br>
 ex.) when zabbix-server ip is "10.0.0.101" .
+
     # cobbler profile edit --name="OCP-MiniOS"--ksmeta="zabbix_server_ip=10.0.0.101"
 
 ##### choice to [OCP-MiniOS] from PXE boot menu.
@@ -117,6 +118,7 @@ ex.) when zabbix-server ip is "10.0.0.101" .
 #### Next step, choice to [CentOS6-x86_64] from PXE boot menu to other server.
 ##### KickstartMetadata chenged "zabbix_server_ip"<br>
 ex.) when zabbix-server ip is "10.0.0.101" .
+
     # cobbler profile edit --name="CentOS6-x86_64"--ksmeta="zabbix_server_ip=10.0.0.101"
 
 ## How to Zabbix Proxy Server
@@ -133,6 +135,7 @@ To use a proxy, you must have two embodiments below.
    KickstartMetadata chenged "zabbix_server_ip"<br>
 
 ex.) when zabbix-server ip is "10.0.0.101" .
+
     # cobbler profile edit --name="ZabbixProxyForCentOS66-x86_64"--ksmeta="zabbix_server_ip=10.0.0.101"
 
 ### Generation of Proxy allocation rules
