@@ -1,7 +1,0 @@
-#set $zabbix_server_ip = $getVar('zabbix_server_ip', 'zabbix-server')
-#set $zabbix_manage_if = $getVar('zabbix_manage_if', 'eth0')
-
-#echo $zabbix_server_ip
-#echo `hostname`
-#echo $zabbix_manage_if
-/usr/bin/zabbix_sender -vv -z $zabbix_server_ip -s "`hostname`" -k "agent.ip" -o $zabbix_manage_if

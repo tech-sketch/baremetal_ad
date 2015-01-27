@@ -1,5 +1,9 @@
 # Install zabbix-proxy
 
+# Environment variable
+#set $zabbix_server_ip = $getVar('zabbix_server_ip', 'zabbix-server')
+#set $zabbix_agent_interface = $getVar('zabbix_agent_interface', 'eth0')
+
 /usr/bin/yum -y install expect --disablerepo=* --enablerepo=core-0,Zabbix-for-RHEL6-x86-64,EPEL6-x86_64,CentOS66x86_64mirror,CentOS66x86_64
 
 /usr/bin/yum -y install OpenIPMI OpenIPMI-tools postgresql-server zabbix-proxy zabbix-get zabbix-sender ipmitool zabbix-proxy-pgsql --disablerepo=* --enablerepo=core-0,Zabbix-for-RHEL6-x86-64,EPEL6-x86_64,CentOS66x86_64mirror,CentOS66-x86_64
@@ -48,3 +52,9 @@ EOF
        /etc/zabbix/zabbix_proxy.conf
 
 /sbin/service zabbix-proxy start
+
+/bin/cat << EOF > /usr/lib/zabbix/proxy_sender.sh
+#!/bin/bash
+/usr/bin/zabbix_sender -vv -z $zabbix_server_ip -s "`hostname`" -k "proxy.name" -o $zabbix_agent_interface
+EOF
+/bin/bash /usr/lib/zabbix/proxy_sender.sh
