@@ -99,11 +99,13 @@ class ZabbixApi(object):
         contents_dict = json.loads(contents.read())
         proxy_id = contents_dict["result"][0]["proxy_hostid"]
 
-        post = json.dumps({'jsonrpc':'2.0', 'method':'proxy.get', 'params':{'output':'extend', 'selectInterface':'extend', 'filter':{'proxyid': proxy_id}}, 'auth':self.auth_token, 'id': 1})
-        request = urllib2.Request(self.api_url, post, {"Content-Type":"application/json-rpc"})
-        contents = urllib2.urlopen(request)
-        contents_dict = json.loads(contents.read())
-        proxy_name = contents_dict["result"][0]["host"]
+        proxy_name = ""
+        if proxy_id != "0":
+            post = json.dumps({'jsonrpc':'2.0', 'method':'proxy.get', 'params':{'output':'extend', 'selectInterface':'extend', 'filter':{'proxyid': proxy_id}}, 'auth':self.auth_token, 'id': 1})
+            request = urllib2.Request(self.api_url, post, {"Content-Type":"application/json-rpc"})
+            contents = urllib2.urlopen(request)
+            contents_dict = json.loads(contents.read())
+            proxy_name = contents_dict["result"][0]["host"]
         return proxy_name
 
     def set_ipmi_setting(self, host_name, authtype, privilege, ipmi_password, ipmi_user_name):

@@ -11,7 +11,8 @@ class Schedule(object):
         self.password = password
 
     def attach_proxy(self):
-        api = ZabbixApi(self.api_url, self.username, self.password)
-        api.user_login()
-        api.attach_host_proxy(self.proxy_name, self.host_name)
-        print "host: %s attached to proxy: %s" % (self.host_name, self.proxy_name)
+    	if self.proxy_name != '':
+            api = ZabbixApi(self.api_url, self.username, self.password)
+            api.user_login()
+            api.attach_host_proxy(self.proxy_name, self.host_name)
+            print "host: %s attached to proxy: %s" % (self.host_name, self.proxy_name)
