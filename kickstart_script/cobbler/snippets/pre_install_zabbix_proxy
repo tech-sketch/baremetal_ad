@@ -45,8 +45,8 @@ EOF
 /bin/sed -i -e "s/^DBName=.*/DBName=$ZABBIX_DB/g" \
        -e "s/^DBUser=.*/DBUser=$ZABBIX_USER/g" \
        -e "s/^DBPassword=.*/DBPassword=$ZABBIX_PASSWORD/g" \
-       -e "s/^Server=.*/Server=$ZABBIX_SERVER/g" \
-       -e "s/# StartIPMIPollers=*/StartIPMIPollers=2/g" \
+       -e "s/^Server=.*/Server=$zabbix_server_ip/g" \
+       -e "s/# StartIPMIPollers=0/StartIPMIPollers=2/g" \
        -e "s/Hostname=/# Hostname=/g" \
        -e "s/# HostnameItem=/HostnameItem=/g" \
        /etc/zabbix/zabbix_proxy.conf
@@ -55,6 +55,6 @@ EOF
 
 /bin/cat << EOF > /usr/lib/zabbix/proxy_sender.sh
 #!/bin/bash
-/usr/bin/zabbix_sender -vv -z $zabbix_server_ip -s "`hostname`" -k "proxy.name" -o $zabbix_agent_interface
+/usr/bin/zabbix_sender -vv -z $zabbix_server_ip -s "`hostname`" -k "proxy.name" -o "`hostname`"
 EOF
 /bin/bash /usr/lib/zabbix/proxy_sender.sh

@@ -87,6 +87,6 @@ EOF
 
 /usr/bin/python /usr/lib/zabbix/scheduler/caller_server.py
 
-/bin/sed -i -e "s/^# StartIPMIPollers=.*/StartIPMIPollers=2/g" /etc/zabbix/zabbix_server.conf
+/bin/sed -i -e "s/^# StartIPMIPollers=0/StartIPMIPollers=2/g" /etc/zabbix/zabbix_server.conf
 
 /etc/init.d/zabbix-server start
