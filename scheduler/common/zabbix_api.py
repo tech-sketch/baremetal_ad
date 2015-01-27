@@ -16,10 +16,10 @@ class ZabbixApi(object):
         return True
 
     def create_proxy(self, proxy_name, mode, ipaddress, dns, type, port):
-        if mode == 0:
-            post = json.dumps({'jsonrpc':'2.0', 'method':'proxy.create', 'params':{'host':proxy_name, 'status': '5'},'auth': self.auth_token,'id':1})
-        elif mode == 1:
+        if mode == '1':
             post = json.dumps({'jsonrpc':'2.0', 'method':'proxy.create', 'params':{'host':proxy_name, 'status': '6', 'interfaces': [{'ip':ipaddress, 'dns':dns, 'useip':type, 'port':port}]},'auth': self.auth_token,'id':1})
+        else:
+            post = json.dumps({'jsonrpc':'2.0', 'method':'proxy.create', 'params':{'host':proxy_name, 'status': '5'},'auth': self.auth_token,'id':1})
         request = urllib2.Request(self.api_url, post, {"Content-Type":"application/json-rpc"})
         contents = urllib2.urlopen(request)
         return True
