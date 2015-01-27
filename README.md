@@ -83,7 +83,7 @@ The following requirements exist for running this product:
     # cobbler repo add --name="Zabbix-for-RHEL6" --arch=x86_64 --breed=yum --mirror=http://repo.zabbix.com/zabbix/2.4/rhel/6/x86_64/
 
 ### profile setting
-<b>Enter the IP address of the zabbix server [[@@ZabbixServerIP@@]]</b>
+Enter the IP address of the zabbix server [[@@ZabbixServerIP@@]]</b>
 
     # cobbler profile edit --name="CentOS66-x86_64" --repos="zabbix-for-RHEL6-x86-64 Zabbix-OCP EPEL6-x86_64 CentOS66x86_64mirror CentOS66x86_64" --kickstart="/var/lib/cobbler/kickstart/CentOS6-x86_64.ks" --ksmeta="zabbix_server_ip=[[@@ZabbixServerIP@@]]" --kopts="console=ttyS1,115200"
 
