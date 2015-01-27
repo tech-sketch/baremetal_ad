@@ -50,10 +50,6 @@ class ZabbixServerStartUp(object):
         request = urllib2.Request(api.api_url, post, {"Content-Type":"application/json-rpc"})
         contents = urllib2.urlopen(request)
 
-        post = json.dumps({'jsonrpc':'2.0', 'method':'action.create', 'params':{'name':'OCP ACTIVATE Automatic Registration', 'eventsource':2, 'status':0, 'esc_period':0,'filter':{'evaltype': 0,'conditions': [{'conditiontype': 24,'operator': 2,'value': 'OCP ACTIVATE'}]},'operations':[{'operationtype': 1,'opcommand_hst': [{'hostid': host_id}],'opcommand': {'type': 0,'execute_on': 1,'command': '/usr/bin/python '+ self.path + '/caller_action.py "UpdateAgentInterfaces" "{HOST.HOST}" "{HOST.IP}"'}}]},'auth': api.auth_token,'id':1})
-        request = urllib2.Request(api.api_url, post, {"Content-Type":"application/json-rpc"})
-        contents = urllib2.urlopen(request)
-
         post = json.dumps({'jsonrpc':'2.0', 'method':'action.create', 'params':{'name':'Create Proxy Action', 'eventsource':0, 'evaltype':0, 'status':0, 'esc_period':3600,'filter':{'evaltype': 1,'conditions': [{'conditiontype': 5,'operator': 0,'value': '1'},{'conditiontype': 3,'operator': 2,'value': 'Create Proxy Triggers'}]},'operations':[{'operationtype': 1,'esc_step_from': 1,'esc_step_to': 1,'evaltype': 1,'opcommand_hst': [{'hostid': '0'}],'opcommand': {'type': 0,'execute_on': 1,'command': '/usr/bin/python '+ self.path + '/caller_action.py "CreateProxy" "{HOST.NAME}"'}}]},'auth': api.auth_token,'id':1})
         request = urllib2.Request(api.api_url, post, {"Content-Type":"application/json-rpc"})
         contents = urllib2.urlopen(request)
