@@ -187,8 +187,7 @@ Please send feedback to us.
 
 [TIS Inc.](http://www.tis.co.jp)
 Strategic Technology Center  
---- for Zabbix team  
-<---@ml.tis.co.jp>.
+<tech-sketch@pj.tis.co.jp>.
 
 
 #License
