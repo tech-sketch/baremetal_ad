@@ -1,9 +1,9 @@
-Zabbix Baremetal Autodiscoverer
+Baremetal AutoDiscovery Tool for Zabbix
 ====
 
 #Overview
 
-Zabbix Baremetal Autodiscover(baremetal_ad) is an Apache2 Licensed, full baremetal monitoring tools, for OpenComputingProject(OCP) machine
+Baremetal AutoDiscovery Tool for Zabbix(baremetal_ad) is an Apache2 Licensed, full baremetal monitoring tools, for OpenComputingProject(OCP) machine
 
 #Description
 
