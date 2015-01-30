@@ -16,7 +16,7 @@ Baremetal AutoDiscovery Tool for Zabbix(baremetal_ad) is an Apache2 Licensed, fu
     - Linux OS
     - Mac OS
     - Windows OS
-- For kickstart of information, please refer to the [Initial setup guide](Initial setup guide).
+- For kickstart of information, please refer to the [Initial setup guide].
 
 #Release Notes
 
