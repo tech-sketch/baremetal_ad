@@ -29,7 +29,7 @@ Baremetal AutoDiscovery Tool for Zabbix(baremetal_ad) is an Apache2 Licensed, fu
 
 run the following file in the OS that contains the Zabbix-Server
 
-    /usr/bin/python /usr/lib/zabbix/scheduler/caller_server.py
+        /usr/bin/python /usr/lib/zabbix/scheduler/caller_server.py
 
 - The following processing is performed by the command execution
 1. Get the host name of Zabbix-Server
